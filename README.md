@@ -26,7 +26,7 @@ Before installing this plugin, you should install Homebridge using the [official
 
 ### Manual installation
 
-1. Install this plugin using: `sudo npm install -g @notify-events/homebridge`.
+1. Install this plugin using: `sudo npm install -g @notify.events/homebridge`.
 2. Edit `config.json` manually to add your notification. See below for instructions on that.
 
 ## Configuration
