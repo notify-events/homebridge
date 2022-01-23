@@ -1,7 +1,7 @@
 # Notify.Events for Homebridge
 
 The integration allows sending alerts and notifications from Smart Home and IoT devices connected to Homebridge via [40+ messengers and other communication tools](https://notify.events/#sRecipients).
-Receive instant messages via Signal, Telegram, Discord, SMS, push, voice calls and more. Apply simple text formatting, level and priority to alerts, and filter by time to direct them to the desired family member.
+Receive instant messages via Signal, Telegram, Discord, Signal., SMS, push, voice calls and more. Apply simple text formatting, level and priority to alerts, and filter by time to direct them to the desired family member.
 See the full list of supported messengers [here](https://notify.events/features).
 
 #### Read the manual in other languages
@@ -26,28 +26,48 @@ Before installing this plugin, you should install Homebridge using the [official
 
 ### Manual installation
 
-1. Install this plugin using: `sudo npm install -g @notify.events/homebridge`.
+1. Install this plugin using: `sudo npm install -g homebridge-notifyevents`.
 2. Edit `config.json` manually to add your notification. See below for instructions on that.
 
 ## Configuration
 
+### Platform configuration
+
 | Parameter | Required | Description                                 |
 |-----------|----------|---------------------------------------------|
+| name      | yes      | platform name                               |
 | token     | yes      | param to specify your Notify.Events `token` |
-| text      | yes      | param to specify message text (allowed html tags: `<b>`, `<i>`, `<a href="">`, `<br>`) |
-| title     |          | message title                               |
-| priority  |          | message priority (`highest`, `high`, `normal`, `low`, `lowest`) |
-| level     |          | message level (`verbose`, `info`, `notice`, `warning`, `error`, `success`) |
+| messages  | yes      |                                             |
 
-Example `config.json` entry:
+### Message (accessory) configuration
+
+| Parameter | Required | Description                                                                            |
+|-----------|----------|----------------------------------------------------------------------------------------|
+| name      | yes      | accessory name                                                                         |
+| title     |          | message title                                                                          |
+| text      | yes      | param to specify message text (allowed html tags: `<b>`, `<i>`, `<a href="">`, `<br>`) |
+| priority  |          | message priority (`highest`, `high`, `normal`, `low`, `lowest`)                        |
+| level     |          | message level (`verbose`, `info`, `notice`, `warning`, `error`, `success`)             |
+
+### Example `config.json` entry:
 
 ```json
-"accessories": [
-  {
-    "accessory": "NotifyEvents",
-    "name": "Flower message",
-    "tokent": "<my-notify-events-channel-token>",
-    "text": "I need water!"
-  }
-]
+{
+    "platforms": [
+        {
+            "platform": "NotifyEvents",
+            "name": "Notify.Events",
+            "token": "<my-notify-events-channel-token>",
+            "messages": [
+                {
+                    "name": "My message",
+                    "title": "My message title",
+                    "text": "My message text <b>with</b> <a href='http://google.com'>HTML</a>",
+                    "priority": "highest",
+                    "level": "error"
+                }
+            ]
+        }
+    ]
+}
 ```

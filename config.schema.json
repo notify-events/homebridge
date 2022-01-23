@@ -1,0 +1,80 @@
+{
+    "pluginAlias": "NotifyEvents",
+    "pluginType": "platform",
+    "singular": false,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "required": true,
+                "default": "Notify.Events"
+            },
+            "token": {
+                "title": "Token",
+                "type": "string",
+                "required": true,
+                "minLength": 32,
+                "maxLength": 32,
+                "pattern": "^[0-9a-zA-Z-_]{32}$",
+                "description": "Please consult the plugin <a href='https://github.com/notify-events/homebridge#notifyevents-configuration' target='_blank'>documentation</a> for instructions on how to get token."
+            },
+            "messages": {
+                "title": "Messages",
+                "type": "array",
+                "items": {
+                    "title": "Message",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "title": "Name",
+                            "type": "string",
+                            "required": true,
+                            "default": "My message"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string",
+                            "required": false
+                        },
+                        "text": {
+                            "title": "Text",
+                            "type": "string",
+                            "required": true,
+                            "default": "Message text",
+                            "description": "Allowed html tags: `&lt;b&gt;`, `&lt;i&gt;`, `&lt;a href=\"\"&gt;`, `&lt;br&gt;`"
+                        },
+                        "priority": {
+                            "title": "Priority",
+                            "type": "string",
+                            "required": true,
+                            "default": "normal",
+                            "oneOf": [
+                                {"title": "Lowest", "enum": ["lowest"]},
+                                {"title": "Low", "enum": ["low"]},
+                                {"title": "Normal", "enum": ["normal"]},
+                                {"title": "High", "enum": ["high"]},
+                                {"title": "Highest", "enum": ["highest"]}
+                            ]
+                        },
+                        "level": {
+                            "title": "Level",
+                            "type": "string",
+                            "required": true,
+                            "default": "info",
+                            "oneOf": [
+                                {"title": "Verbose", "enum": ["verbose"]},
+                                {"title": "Info", "enum": ["info"]},
+                                {"title": "Notice", "enum": ["notice"]},
+                                {"title": "Warning", "enum": ["warning"]},
+                                {"title": "Error", "enum": ["error"]},
+                                {"title": "Success", "enum": ["success"]}
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

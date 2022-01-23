@@ -1,117 +1,129 @@
-"use strict";
+'use strict';
 
 const Message = require('@notify.events/nodejs').Message;
 
-let Service, Characteristic;
+module.exports = (api) => {
+    api.registerPlatform('homebridge-notifyevents', 'NotifyEvents', NotifyEventsPlatform);
+};
 
-module.exports = function(homebridge) {
-    Service        = homebridge.hap.Service;
-    Characteristic = homebridge.hap.Characteristic;
+class NotifyEventsPlatform {
 
-    homebridge.registerAccessory("homebridge-notify-events", "NotifyEvents", NotifyEventsSwitch);
+    constructor(log, config, api) {
+        this.log = log;
+        this.config = config;
+        this.api = api;
+
+        if (!this.config.name) {
+            this.log.error('Error: Missing platform name!');
+            return;
+        }
+
+        if (!this.config.token) {
+            this.log.error('Error: Missing platform token!');
+            return;
+        }
+
+        if (!this.config.messages) {
+            this.log.error('Error: Missing platform messages!');
+            return;
+        }
+    }
+
+    sendMessage(message) {
+        message.send(this.config.token);
+    }
+
+    accessories(callback) {
+        let items = [];
+
+        const { messages } = this.config;
+
+        if (Array.isArray(messages)) {
+            messages.forEach(message => {
+                try {
+                    items.push(new NotifyEventsAccessory(this, message));
+                } catch (e) {
+                    this.log.error(e.message);
+                }
+            });
+        }
+
+        callback(items);
+    }
+
 }
 
-const NotifyEventsSwitch = class {
+class NotifyEventsAccessory {
 
-    constructor(log, config) {
-        this.log = log;
-        this.log('Notify.Events Plugin Loaded');
-
+    constructor(platform, config) {
+        this.platform = platform;
         this.config = config;
 
-        /////////////////////////////////////////////
+        this.log = this.platform.log;
+        this.api = this.platform.api;
 
-        this.name = config['name'];
-        if (!this.name) {
-            throw new Error('Missing name!');
+        if (!this.config.name) {
+            throw new Error('Error: Missing message name!');
         }
 
-        this.token = config['token'];
-        if (!this.token) {
-            throw new Error('Missing token!');
+        if (!this.config.text) {
+            throw new Error('Error: Missing message text!');
         }
 
-        this.title = config['title'];
-
-        this.text = config['text'];
-        if (!this.text) {
-            throw new Error('Missing text!');
-        }
-
-        this.priority = config['priority'];
-        if (this.priority && ![
+        if (this.config.priority && ![
             Message.PRIORITY_LOWEST,
             Message.PRIORITY_LOW,
             Message.PRIORITY_NORMAL,
             Message.PRIORITY_HIGH,
             Message.PRIORITY_HIGHEST,
-        ].includes(this.priority)) {
-            throw new Error('Invalid priority value: ' + this.priority);
+        ].includes(this.config.priority)) {
+            throw new Error('Error: Invalid message priority value: ' + this.config.priority);
         }
 
-        this.level = config['level'];
-        if (this.level && ![
+        if (this.config.level && ![
             Message.LEVEL_VERBOSE,
             Message.LEVEL_INFO,
             Message.LEVEL_NOTICE,
             Message.LEVEL_WARNING,
             Message.LEVEL_ERROR,
-            Message.LEVEL_SUCCESS
-        ].includes(this.level)) {
-            throw new Error('Invalid level value: ' . this.level);
+            Message.LEVEL_SUCCESS,
+        ].includes(this.config.level)) {
+            throw new Error('Error: Invalid message level value: ' + this.config.level);
         }
 
-        /////////////////////////////////////////////
+        this.name = this.config.name;
 
-        this.services = {
-            AccessoryInformation: new Service.AccessoryInformation(),
-            Switch: new Service.Switch(this.name)
-        };
+        this.informationService = new this.api.hap.Service.AccessoryInformation()
+            .setCharacteristic(this.api.hap.Characteristic.Manufacturer, 'Notify.Events')
+            .setCharacteristic(this.api.hap.Characteristic.Model, 'Message');
 
-        this.services.AccessoryInformation
-            .setCharacteristic(Characteristic.Manufacturer, 'Notify.Events');
-        this.services.AccessoryInformation
-            .setCharacteristic(Characteristic.Model, 'Base');
+        this.switchService = new this.api.hap.Service.Switch(this.name);
 
-        this.services.Switch
-            .getChannelData(Characteristic.On);
-        this.services.Switch
-            .on("set", this.setPowerState.bind(this));
-        this.services.Switch
-            .setCharacteristic(Characteristic.On, false);
+        this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
+            .onGet(this.getOnHandler.bind(this))
+            .onSet(this.setOnHandler.bind(this));
     }
 
     sendMessage() {
-        let self = this;
+        this.log.info('[' + this.name + '] Send message');
 
-        const message = new Message(this.text, this.title, this.priority, this.level);
+        const message = new Message(this.config.text, this.config.title, this.config.priority, this.config.level);
 
-        self.log('Send Notify.Events message');
-
-        message.send(this.token)
-            .then(response => {
-                if (response.status !== 200) {
-                    self.log('Send message error: [' + response.status + '] ' + response.statusText);
-                }
-            })
-            .catch(error => {
-                self.log(error);
-            });
-
-        this.services.Switch
-            .setCharacteristic(Characteristic.On, false);
+        this.platform.sendMessage(message);
     }
 
-    setPowerState(powerOn, callback) {
-        if (powerOn) {
+    async getOnHandler() {
+        return false;
+    }
+
+    async setOnHandler(value) {
+        if (value) {
             this.sendMessage();
         }
-
-        callback();
     }
 
     getServices() {
-        return [this.services.AccessoryInformation, this.services.Switch];
+        return [this.informationService, this.switchService];
     }
-
 }
+
