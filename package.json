@@ -1,7 +1,7 @@
 {
   "displayName": "Notify.Events",
   "name": "homebridge-notifyevents",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "HomeBridge plugin to send message using Notify.Events service",
   "author": "Notify.Events",
   "keywords": [
@@ -23,10 +23,10 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src/*",
-    "release": "npm-github-release"
+    "release": "npm publish --access public"
   },
   "engines": {
-    "node": ">=12.22.0",
+    "node": ">=14.0.0",
     "homebridge": ">=0.4.36"
   },
   "repository": {
@@ -34,8 +34,7 @@
     "url": "git+https://github.com/notify-events/homebridge.git"
   },
   "devDependencies": {
-    "eslint": "^8.7.0",
-    "npm-github-release": "^0.13.0"
+    "eslint": "^8.7.0"
   },
   "dependencies": {
     "@notify.events/nodejs": "^1.1.1"
