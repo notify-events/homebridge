@@ -1,5 +1,7 @@
 # Notify.Events для Homebridge
 
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+
 Интеграция позволяет отправлять уведомления от умных устройств, подключенных к Homebridge в [40+ мессенджеров и другие средства связи](https://notify.events/#sRecipients).
 Получайте мгновенные оповещения в Telegram, Viber, Zoom, VK, Discord, по SMS, в виде push-уведомлений и другими способами. Применяйте простое форматирование текста, назначайте уведомлениям уровень и приоритет, задавайте фильтрацию по времени, чтобы сортировать сообщения от умных устройств и направлять их нужному члену семьи.
 Посмотрите полный список поддерживаемых мессенджеров [здесь](https://notify.events/features).

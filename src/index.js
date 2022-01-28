@@ -30,7 +30,10 @@ class NotifyEventsPlatform {
     }
 
     sendMessage(message) {
-        message.send(this.config.token);
+        message.send(this.config.token)
+            .catch(function (error) {
+                this.log.error('Error: Send message fail with message "' + error.message + '"');
+            });
     }
 
     accessories(callback) {

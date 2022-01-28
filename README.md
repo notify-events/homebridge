@@ -1,5 +1,7 @@
 # Notify.Events for Homebridge
 
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+
 The integration allows sending alerts and notifications from Smart Home and IoT devices connected to Homebridge via [40+ messengers and other communication tools](https://notify.events/#sRecipients).
 Receive instant messages via Signal, Telegram, Discord, Signal., SMS, push, voice calls and more. Apply simple text formatting, level and priority to alerts, and filter by time to direct them to the desired family member.
 See the full list of supported messengers [here](https://notify.events/features).
