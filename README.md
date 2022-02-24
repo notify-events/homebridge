@@ -1,9 +1,14 @@
 # Notify.Events for Homebridge
 
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![npm](https://img.shields.io/npm/v/homebridge-notifyevents)
+![npm](https://img.shields.io/npm/dw/homebridge-notifyevents)
 
-The integration allows sending alerts and notifications from Smart Home and IoT devices connected to Homebridge via [40+ messengers and other communication tools](https://notify.events/#sRecipients).
+This integration allows sending alerts and notifications from Smart Home and IoT devices connected to Homebridge via [40+ messengers and other communication tools](https://notify.events/#sRecipients).
+
 Receive instant messages via Signal, Telegram, Discord, Signal., SMS, push, voice calls and more. Apply simple text formatting, level and priority to alerts, and filter by time to direct them to the desired family member.
+
 See the full list of supported messengers [here](https://notify.events/features).
 
 #### Read the manual in other languages
@@ -35,21 +40,54 @@ Before installing this plugin, you should install Homebridge using the [official
 
 ### Platform configuration
 
-| Parameter | Required | Description                                 |
-|-----------|----------|---------------------------------------------|
-| name      | yes      | platform name                               |
-| token     | yes      | param to specify your Notify.Events `token` |
-| messages  | yes      |                                             |
+| Parameter | Required | Description                                                   |
+|-----------|----------|---------------------------------------------------------------|
+| action    | yes      | [Action handler configuration](#Action-handler-configuration) |
+| channels  | yes      | [Channel list](#Channel-configuration)                        |
+
+### Action handler configuration
+
+All described Actions are becoming the buttons you will see under the notification message to take an action right from the chat.
+
+After you pushing one of those buttons, Notify.Events will trigger an Action accessory in your Homebridge, which you can use as a trigger for your automations.
+
+In order for Notify.Events to interact with Homebridge, you need to enable action support and set up a handler:
+
+| Parameter | Required         | Description                                                                           |
+|-----------|------------------|---------------------------------------------------------------------------------------|
+| enabled   |                  | Enable Actions                                                                        |
+| listen    | yes (if enabled) | Listen host (To listen to all interfaces you can use "0.0.0.0" (IPv4) or "::" (IPv6)) |
+| port      | yes (if enabled) | Listen port                                                                           |
+| host      | yes (if enabled) | Your external host                                                                    |
+| path      | yes (if enabled) | Action target path                                                                    |
+
+**Notice**: Don't forget to make sure that your Homebridge instance is reachable from the web.
+
+### Channel configuration
+
+| Parameter | Required | Description                                                 |
+|-----------|----------|-------------------------------------------------------------|
+| title     | yes      | Channel name                                                |
+| token     | yes      | [Notify.Events channel token](#Notify.Events-configuration) |
+| messages  | yes      | [Message list](#Message-(accessory)-configuration)          |
 
 ### Message (accessory) configuration
 
-| Parameter | Required | Description                                                                            |
-|-----------|----------|----------------------------------------------------------------------------------------|
-| name      | yes      | accessory name                                                                         |
-| title     |          | message title                                                                          |
-| text      | yes      | param to specify message text (allowed html tags: `<b>`, `<i>`, `<a href="">`, `<br>`) |
-| priority  |          | message priority (`highest`, `high`, `normal`, `low`, `lowest`)                        |
-| level     |          | message level (`verbose`, `info`, `notice`, `warning`, `error`, `success`)             |
+| Parameter | Required | Description                                                                |
+|-----------|----------|----------------------------------------------------------------------------|
+| name      | yes      | Accessory name                                                             |
+| title     |          | Message title                                                              |
+| text      | yes      | Message text (allowed html-tags: `<b>`, `<i>`, `<a href="">`, `<br>`)      |
+| priority  |          | Message priority (`highest`, `high`, `normal`, `low`, `lowest`)            |
+| level     |          | Message level (`verbose`, `info`, `notice`, `warning`, `error`, `success`) |
+| actions   |          | [Action list](#Action-(accessory)-configuration)                           |
+
+### Action (accessory) configuration
+
+| Parameter | Required | Description           |
+|-----------|----------|-----------------------|
+| name      | yes      | Accessory name        |
+| title     | yes      | Action (button) title |
 
 ### Example `config.json` entry:
 
@@ -58,15 +96,32 @@ Before installing this plugin, you should install Homebridge using the [official
     "platforms": [
         {
             "platform": "NotifyEvents",
-            "name": "Notify.Events",
-            "token": "<my-notify-events-channel-token>",
-            "messages": [
+            "action": {
+                "enabled": true,
+                "listen": "0.0.0.0",
+                "port": 53535,
+                "host": "<your-homebridge-host>",
+                "path": "/"
+            },
+            "channels": [
                 {
-                    "name": "My message",
-                    "title": "My message title",
-                    "text": "My message text <b>with</b> <a href='http://google.com'>HTML</a>",
-                    "priority": "highest",
-                    "level": "error"
+                    "title": "My Channel",
+                    "token": "<your-notifyevents-token>",
+                    "messages": [
+                        {
+                            "name": "My Message",
+                            "title": "My Message Title",
+                            "text": "Hello <b>Dolly</b>",
+                            "priority": "normal",
+                            "level": "info",
+                            "actions": [
+                                {
+                                    "name": "My Action",
+                                    "title": "Click Me"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

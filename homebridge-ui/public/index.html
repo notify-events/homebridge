@@ -1,0 +1,318 @@
+<div id="app">
+    <div class="form-group form-check">
+        <input type="checkbox" v-model="platform.action.enabled" :id="name('action.enabled')" class="form-check-input" v-bind:class="{ 'is-invalid': error('action.enabled') }" />
+        <label :for="name('action.enabled')" class="form-check-label">Enable Actions</label>
+        <div class="invalid-feedback" v-if="error('action.enabled')">{{ error('action.enabled') }}</div>
+        <small class="form-text text-muted">Actions are becoming the buttons you will see under the notification message to take an action right from the chat</small>
+    </div>
+
+    <div v-if="platform.action.enabled" class="form-group">
+        <label>Action configuration</label>
+
+        <div class="card card-body mb-4">
+
+            <div class="row">
+                <div class="col-12 col-md-9">
+                    <div class="form-group">
+                        <label :for="name('action.listen')">Listen host</label>
+                        <input type="text" v-model="platform.action.listen" :id="name('action.listen')" placeholder="0.0.0.0" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('action.listen') }" />
+                        <div class="invalid-feedback" v-if="error('action.listen')">{{ error('action.listen') }}</div>
+                        <small class="form-text text-muted">To listen to all interfaces you can use "0.0.0.0" (IPv4) or "::" (IPv6)</small>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="form-group">
+                        <label :for="name('action.port')">Port</label>
+                        <input type="number" v-model="platform.action.port" :id="name('action.port')" placeholder="53535" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('action.port') }" />
+                        <div class="invalid-feedback" v-if="error('action.port')">{{ error('action.port') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label :for="name('action.host')">Your external host</label>
+                        <input type="text" v-model="platform.action.host" :id="name('action.host')" placeholder="your-homebridge-host" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('action.host') }" />
+                        <div class="invalid-feedback" v-if="error('action.host')">{{ error('action.host') }}</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label :for="name('action.path')">Action target path</label>
+                        <input type="text" v-model="platform.action.path" :id="name('action.path')" placeholder="/" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('action.path') }" />
+                        <div class="invalid-feedback" v-if="error('action.path')">{{ error('action.path') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning mb-0">
+                <div class="mb-2">
+                    <b>Your instance external URL</b>: http://{{ platform.action.host ? platform.action.host : 'your-homebridge-host' }}:{{ platform.action.port ? platform.action.port : 53535 }}{{ platform.action.path ? platform.action.path : '/' }}<br>
+                </div>
+                <div>
+                    Don't forget to make sure that your Homebridge instance is reachable from the web
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Channels</label>
+
+        <div>
+            <div v-for="(channel, cIdx) in platform.channels" class="card mb-2">
+                <div class="card-header p-0 d-flex">
+                    <div class="w-100 text-left d-flex align-items-center">
+                        <h5 v-html="defaultName(channel.title, 'My Channel')" class="m-0 ml-4"></h5>
+                    </div>
+                    <button @click="removeChannel(cIdx)" class="btn btn-danger btn-icon"><i class="fa fa-trash"></i></button>
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label :for="name('title', cIdx)">Title</label>
+                                <input type="text" v-model="channel.title" :id="name('title', cIdx)" placeholder="My Channel" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('title', cIdx) }" />
+                                <div class="invalid-feedback" v-if="error('title', cIdx)">{{ error('title', cIdx) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label :for="name('token', cIdx)">Token</label>
+                                <input type="text" v-model="channel.token" :id="name('token', cIdx)" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('token', cIdx) }" />
+                                <div class="invalid-feedback" v-if="error('token', cIdx)">{{ error('token', cIdx) }}</div>
+                                <small class="form-text text-muted">Your Notify.Events <a href="https://github.com/notify-events/homebridge#notifyevents-configuration" target="_blank">channel token</a></small>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Messages</label>
+
+                        <div>
+                            <div v-for="(message, mIdx) in channel.messages" class="card mb-2">
+                                <div class="card-header p-0 d-flex">
+                                    <div class="w-100 text-left d-flex align-items-center">
+                                        <h5 v-html="defaultName(message.name, 'My Message')" class="m-0 ml-4"></h5>
+                                    </div>
+                                    <button @click="removeMessage(cIdx, mIdx)" class="btn btn-danger btn-icon"><i class="fa fa-trash"></i></button>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="form-group">
+                                        <label :for="name('name', cIdx, mIdx)">Accessory name</label>
+                                        <input type="text" v-model="message.name" :id="name('name', cIdx, mIdx)" placeholder="My Message" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('name', cIdx, mIdx) }" />
+                                        <div class="invalid-feedback" v-if="error('name', cIdx, mIdx)">{{ error('name', cIdx, mIdx) }}</div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="form-group">
+                                        <label :for="name('title', cIdx, mIdx)">Message title</label>
+                                        <input type="text" v-model="message.title" :id="name('title', cIdx, mIdx)" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('title', cIdx, mIdx) }" />
+                                        <div class="invalid-feedback" v-if="error('title', cIdx, mIdx)">{{ error('title', cIdx, mIdx) }}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label :for="name('text', cIdx, mIdx)">Text</label>
+                                        <textarea v-model="message.text" :id="name('text', cIdx, mIdx)" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('text', cIdx, mIdx) }"></textarea>
+                                        <div class="invalid-feedback" v-if="error('text', cIdx, mIdx)">{{ error('text', cIdx, mIdx) }}</div>
+                                        <small class="form-text text-muted">Allowed html-tags: &lt;b&gt;, &lt;i&gt;, &lt;a href=""&gt;, &lt;br&gt;</small>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group">
+                                                <label :for="name('priority', cIdx, mIdx)">Priority</label>
+                                                <select v-model="message.priority" :id="name('priority', cIdx, mIdx)" class="custom-select custom-select-sm" v-bind:class="{ 'is-invalid': error('priority', cIdx, mIdx) }">
+                                                    <option value="lowest">Lowest</option>
+                                                    <option value="low">Low</option>
+                                                    <option value="normal">Normal</option>
+                                                    <option value="high">High</option>
+                                                    <option value="highest">Highest</option>
+                                                </select>
+                                                <div class="invalid-feedback" v-if="error('priority', cIdx, mIdx)">{{ error('priority', cIdx, mIdx) }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group">
+                                                <label :for="name('level', cIdx, mIdx)">Level</label>
+                                                <select v-model="message.level" :id="name('level', cIdx, mIdx)" class="custom-select custom-select-sm" v-bind:class="{ 'is-invalid': error('level', cIdx, mIdx) }">
+                                                    <option value="verbose">Verbose</option>
+                                                    <option value="info">Info</option>
+                                                    <option value="notice">Notice</option>
+                                                    <option value="warning">Warning</option>
+                                                    <option value="error">Error</option>
+                                                    <option value="success">Success</option>
+                                                </select>
+                                                <div class="invalid-feedback" v-if="error('level', cIdx, mIdx)">{{ error('level', cIdx, mIdx) }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" v-if="platform.action.enabled">
+                                        <label>Actions</label>
+
+                                        <div>
+                                            <div v-for="(action, aIdx) in message.actions" class="card mb-2">
+                                                <div class="card-header p-0 d-flex">
+                                                    <div class="w-100 text-left d-flex align-items-center">
+                                                        <h5 v-html="defaultName(action.name, 'My Action')" class="m-0 ml-4"></h5>
+                                                    </div>
+                                                    <button @click="removeAction(cIdx, mIdx, aIdx)" class="btn btn-danger btn-icon"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                                <div class="card-body">
+
+                                                    <div class="row">
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-group">
+                                                                <label :for="name('name', cIdx, mIdx, aIdx)">Accessory name</label>
+                                                                <input type="text" v-model="action.name" :id="name('name', cIdx, mIdx, aIdx)" placeholder="My Action" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('name', cIdx, mIdx, aIdx) }" />
+                                                                <div class="invalid-feedback" v-if="error('name', cIdx, mIdx, aIdx)">{{ error('name', cIdx, mIdx, aIdx) }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-group">
+                                                                <label :for="name('title', cIdx, mIdx, aIdx)">Action title</label>
+                                                                <input type="text" v-model="action.title" :id="name('title', cIdx, mIdx, aIdx)" placeholder="Click Me" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('title', cIdx, mIdx, aIdx) }" />
+                                                                <div class="invalid-feedback" v-if="error('title', cIdx, mIdx, aIdx)">{{ error('title', cIdx, mIdx, aIdx) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button @click="addAction(cIdx, mIdx)" v-bind:class="{ disabled: (message.actions && message.actions.length >= 3) }" class="btn btn-elegant ml-0">Add action</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <button @click="addMessage(cIdx)" class="btn btn-elegant ml-0">Add message</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <button @click="addChannel()" class="btn btn-elegant ml-0">Add channel</button>
+    </div>
+
+</div>
+
+<script src="js/jquery.slim.min.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/common.js"></script>
+<script>
+    (async () => {
+        function clone(data) {
+            return JSON.parse(JSON.stringify(data));
+        }
+
+        /** @var {array} */
+        let platforms = await homebridge.getPluginConfig();
+
+        platforms = common.convert_from_1_1_2(platforms);
+
+        let errors = {};
+
+        let platform = platforms.length ? platforms[0] : clone(common.CONFIG_DEFAULT_PLATFORM);
+
+        platform = common.fill(platform, common.CONFIG);
+        platform = common.validate(platform, common.CONFIG, errors);
+
+        await homebridge.updatePluginConfig([
+            clone(platform)
+        ]);
+
+        const app = Vue.createApp({
+            data() {
+                return {
+                    platform: platform,
+                    errors: errors
+                };
+            },
+            watch: {
+                platform: {
+                    async handler(platform) {
+                        let errors = {};
+
+                        platform = common.validate(platform, common.CONFIG, errors);
+
+                        await homebridge.updatePluginConfig([
+                            clone(platform),
+                        ]);
+
+                        this.errors = errors;
+                    },
+                    deep: true,
+                },
+            },
+            methods: {
+                name(name, cIdx = null, mIdx = null, aIdx = null) {
+                    if (aIdx !== null) { name = 'actions.' + aIdx + '.' + name; }
+                    if (mIdx !== null) { name = 'messages.' + mIdx + '.' + name; }
+                    if (cIdx !== null) { name = 'channels.' + cIdx + '.' + name; }
+
+                    return 'platform.' + name;
+                },
+                error(name, cIdx = null, mIdx = null, aIdx = null) {
+                    name = this.name(name, cIdx, mIdx, aIdx);
+
+                    return (name in this.errors) ? this.errors[name] : false;
+                },
+                addChannel() {
+                    if (!Array.isArray(this.platform.channels)) {
+                        this.platform.channels = [];
+                    }
+
+                    this.platform.channels.push(
+                        clone(common.CONFIG_DEFAULT_CHANNEL)
+                    );
+                },
+                removeChannel(cIdx) {
+                    this.platform.channels.splice(cIdx, 1);
+                },
+                addMessage(cIdx) {
+                    if (!Array.isArray(this.platform.channels[cIdx].messages)) {
+                        this.platform.channels[cIdx].messages = [];
+                    }
+
+                    this.platform.channels[cIdx].messages.push(
+                        clone(common.CONFIG_DEFAULT_MESSAGE)
+                    );
+                },
+                removeMessage(cIdx, mIdx) {
+                    this.platform.channels[cIdx].messages.splice(mIdx, 1);
+                },
+                addAction(cIdx, mIdx) {
+                    if (!Array.isArray(this.platform.channels[cIdx].messages[mIdx].actions)) {
+                        this.platform.channels[cIdx].messages[mIdx].actions = [];
+                    }
+
+                    this.platform.channels[cIdx].messages[mIdx].actions.push(
+                        clone(common.CONFIG_DEFAULT_ACTION)
+                    );
+                },
+                removeAction(cIdx, mIdx, aIdx) {
+                    this.platform.channels[cIdx].messages[mIdx].actions.splice(aIdx, 1);
+                },
+                defaultName(name, def) {
+                    if (name !== undefined && name.trim().length > 0) {
+                        return name;
+                    }
+
+                    return '<i class="text-muted">' + def + '</i>';
+                },
+            },
+        });
+
+        const vm = app.mount('#app');
+    })();
+</script>
