@@ -54,9 +54,13 @@
                     listen: {
                         type: 'string',
                         required: function (config) {
-                            return config.action.enabled;
+                            return getValue(config, 'action.enabled');
                         },
                         validate: function (value, config, errors, key) {
+                            if (!getValue(config, 'action.enabled')) {
+                                return value;
+                            }
+
                             if (!isIpv4(value) && !isIpv6(value)) {
                                 errors[key] = 'Invalid address';
                             }
@@ -68,7 +72,7 @@
                     port: {
                         type: 'number',
                         required: function (config) {
-                            return config.action.enabled;
+                            return getValue(config, 'action.enabled');
                         },
                         default: CONFIG_DEFAULT_PLATFORM.action.port,
                         min: 1,
@@ -77,9 +81,13 @@
                     host: {
                         type: 'string',
                         required: function (config) {
-                            return config.action.enabled;
+                            return getValue(config, 'action.enabled');
                         },
                         validate: function (value, config, errors, key) {
+                            if (!getValue(config, 'action.enabled')) {
+                                return value;
+                            }
+
                             if (!isHost(value)) {
                                 errors[key] = 'Invalid host';
                             }
@@ -91,7 +99,7 @@
                     path: {
                         type: 'string',
                         required: function (config) {
-                            return config.action.enabled;
+                            return getValue(config, 'action.enabled');
                         },
                         default: CONFIG_DEFAULT_PLATFORM.action.path
                     }
@@ -208,6 +216,24 @@
             }
         }
     };
+
+    const getValue = function(config, path, def = null) {
+        path = path.split('.');
+
+        if (path.every(function (key) {
+            if (key in config) {
+                config = config[key];
+
+                return true;
+            }
+
+            return false;
+        })) {
+            return config;
+        } else {
+            return def;
+        }
+    }
 
     const isIpv4 = function(value) {
         const regexp = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi;
@@ -444,7 +470,7 @@
         }
 
         if (('validate' in config) && !(key in errors)) {
-            value = config.validate(value, config, errors, key);
+            value = config.validate(value, initialValue, errors, key);
         }
 
         return value;
