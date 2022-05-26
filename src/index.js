@@ -259,20 +259,22 @@ class NotifyEventsMessage {
 
         const actionConfig = this.channel.platform.config.action;
 
-        const rUrl = new URL(`http://${actionConfig.host}:${actionConfig.port}${actionConfig.path}`);
+        if (actionConfig.enabled) {
+            const rUrl = new URL(`http://${actionConfig.host}:${actionConfig.port}${actionConfig.path}`);
 
-        rUrl.searchParams.set('channelIdx', this.channel.index);
-        rUrl.searchParams.set('messageIdx', this.index);
+            rUrl.searchParams.set('channelIdx', this.channel.index);
+            rUrl.searchParams.set('messageIdx', this.index);
 
-        this.actions.forEach(action => {
-            rUrl.searchParams.set('actionIdx', action.index);
+            this.actions.forEach(action => {
+                rUrl.searchParams.set('actionIdx', action.index);
 
-            try {
-                message.addAction(action.config.name, action.config.title, rUrl.href);
-            } catch (e) {
-                this.log.error(e.message);
-            }
-        });
+                try {
+                    message.addAction(action.config.name, action.config.title, rUrl.href);
+                } catch (e) {
+                    this.log.error(e.message);
+                }
+            });
+        }
 
         this.channel.sendMessage(message);
     }
