@@ -104,6 +104,38 @@
                                             {"title": "Success", "enum": ["success"]}
                                         ]
                                     },
+                                    "images": {
+                                        "title": "Images",
+                                        "type": "array",
+                                        "maxItems": 5,
+                                        "items": {
+                                            "title": "Image",
+                                            "type": "object",
+                                            "properties": {
+                                                "filename": {
+                                                    "title": "Image filepath",
+                                                    "type": "string",
+                                                    "required": true
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "files": {
+                                        "title": "Files",
+                                        "type": "array",
+                                        "maxItems": 5,
+                                        "items": {
+                                            "title": "File",
+                                            "type": "object",
+                                            "properties": {
+                                                "filename": {
+                                                    "title": "Image filename",
+                                                    "type": "string",
+                                                    "required": true
+                                                }
+                                            }
+                                        }
+                                    },
                                     "actions": {
                                         "title": "Actions",
                                         "type": "array",

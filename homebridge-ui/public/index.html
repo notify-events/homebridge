@@ -153,6 +153,58 @@
                                         </div>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label>Images</label>
+
+                                        <div>
+                                            <div v-for="(image, iIdx) in message.images" class="card mb-2">
+                                                <div class="card-header p-0 d-flex">
+                                                    <div class="w-100 text-left d-flex align-items-center">
+                                                        <h5 v-html="defaultName(image.filename, '')" class="m-0 ml-4"></h5>
+                                                    </div>
+                                                    <button @click="removeImage(cIdx, mIdx, iIdx)" class="btn btn-danger btn-icon"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                                <div class="card-body">
+
+                                                    <div class="form-group">
+                                                        <label :for="name('filename', cIdx, mIdx, iIdx)">Filename</label>
+                                                        <input type="text" v-model="image.filename" :id="name('filename', cIdx, mIdx, iIdx)" placeholder="Image filename" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('filename', cIdx, mIdx, iIdx) }" />
+                                                        <div class="invalid-feedback" v-if="error('filename', cIdx, mIdx, iIdx)">{{ error('filename', cIdx, mIdx, iIdx) }}</div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button @click="addImage(cIdx, mIdx)" v-bind:class="{ disabled: (message.images.length >= 5) }" class="btn btn-elegant ml-0">Add image</button>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Files</label>
+
+                                        <div>
+                                            <div v-for="(file, fIdx) in message.files" class="card mb-2">
+                                                <div class="card-header p-0 d-flex">
+                                                    <div class="w-100 text-left d-flex align-items-center">
+                                                        <h5 v-html="defaultName(file.filename, '')" class="m-0 ml-4"></h5>
+                                                    </div>
+                                                    <button @click="removeFile(cIdx, mIdx, fIdx)" class="btn btn-danger btn-icon"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                                <div class="card-body">
+
+                                                    <div class="form-group">
+                                                        <label :for="name('filename', cIdx, mIdx, fIdx)">Filename</label>
+                                                        <input type="text" v-model="file.filename" :id="name('filename', cIdx, mIdx, fIdx)" placeholder="File filename" class="form-control form-control-sm" v-bind:class="{ 'is-invalid': error('filename', cIdx, mIdx, fIdx) }" />
+                                                        <div class="invalid-feedback" v-if="error('filename', cIdx, mIdx, fIdx)">{{ error('filename', cIdx, mIdx, fIdx) }}</div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button @click="addFile(cIdx, mIdx)" v-bind:class="{ disabled: (message.files.length >= 5) }" class="btn btn-elegant ml-0">Add file</button>
+                                    </div>
+
                                     <div class="form-group" v-if="platform.action.enabled">
                                         <label>Actions</label>
 
@@ -290,6 +342,30 @@
                 },
                 removeMessage(cIdx, mIdx) {
                     this.platform.channels[cIdx].messages.splice(mIdx, 1);
+                },
+                addImage(cIdx, mIdx) {
+                    if (!Array.isArray(this.platform.channels[cIdx].messages[mIdx].images)) {
+                        this.platform.channels[cIdx].messages[mIdx].images = [];
+                    }
+
+                    this.platform.channels[cIdx].messages[mIdx].images.push(
+                        clone(common.CONFIG_DEFAULT_IMAGE)
+                    );
+                },
+                removeImage(cIdx, mIdx, iIdx) {
+                    this.platform.channels[cIdx].messages[mIdx].images.splice(iIdx, 1);
+                },
+                addFile(cIdx, mIdx) {
+                    if (!Array.isArray(this.platform.channels[cIdx].messages[mIdx].files)) {
+                        this.platform.channels[cIdx].messages[mIdx].files = [];
+                    }
+
+                    this.platform.channels[cIdx].messages[mIdx].files.push(
+                        clone(common.CONFIG_DEFAULT_FILE)
+                    );
+                },
+                removeFile(cIdx, mIdx, fIdx) {
+                    this.platform.channels[cIdx].messages[mIdx].files.splice(fIdx, 1);
                 },
                 addAction(cIdx, mIdx) {
                     if (!Array.isArray(this.platform.channels[cIdx].messages[mIdx].actions)) {

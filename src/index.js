@@ -257,6 +257,14 @@ class NotifyEventsMessage {
 
         const message = new Message(this.config.text, this.config.title, this.config.priority, this.config.level);
 
+        this.config.images.forEach(image => {
+            message.addImage(image.filename);
+        });
+
+        this.config.files.forEach(file => {
+            message.addFile(file.filename);
+        });
+
         const actionConfig = this.channel.platform.config.action;
 
         if (actionConfig.enabled) {

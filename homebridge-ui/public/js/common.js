@@ -5,10 +5,20 @@
         title: 'Click Me'
     };
 
+    const CONFIG_DEFAULT_IMAGE = {
+        filename: ''
+    };
+
+    const CONFIG_DEFAULT_FILE = {
+        filename: ''
+    };
+
     const CONFIG_DEFAULT_MESSAGE = {
         name: '',
         priority: 'normal',
         level: 'info',
+        images: [],
+        files: [],
         actions: []
     };
 
@@ -186,6 +196,38 @@
                                             'error',
                                             'success'
                                         ]
+                                    },
+                                    images: {
+                                        type: 'array',
+                                        required: false,
+                                        default: [],
+                                        items: {
+                                            type: 'object',
+                                            default: CONFIG_DEFAULT_IMAGE,
+                                            properties: {
+                                                filename: {
+                                                    type: 'string',
+                                                    required: true,
+                                                    default: CONFIG_DEFAULT_IMAGE.filename
+                                                }
+                                            }
+                                        }
+                                    },
+                                    files: {
+                                        type: 'array',
+                                        required: false,
+                                        default: [],
+                                        items: {
+                                            type: 'object',
+                                            default: CONFIG_DEFAULT_FILE,
+                                            properties: {
+                                                filename: {
+                                                    type: 'string',
+                                                    required: true,
+                                                    default: CONFIG_DEFAULT_FILE.filename
+                                                }
+                                            }
+                                        }
                                     },
                                     actions: {
                                         type: 'array',
@@ -480,6 +522,8 @@
     exports.CONFIG_DEFAULT_PLATFORM = CONFIG_DEFAULT_PLATFORM;
     exports.CONFIG_DEFAULT_CHANNEL = CONFIG_DEFAULT_CHANNEL;
     exports.CONFIG_DEFAULT_MESSAGE = CONFIG_DEFAULT_MESSAGE;
+    exports.CONFIG_DEFAULT_IMAGE = CONFIG_DEFAULT_IMAGE;
+    exports.CONFIG_DEFAULT_FILE = CONFIG_DEFAULT_FILE;
     exports.CONFIG_DEFAULT_ACTION = CONFIG_DEFAULT_ACTION;
 
     exports.convert_from_1_1_2 = convert_from_1_1_2;

@@ -1,7 +1,7 @@
 {
   "displayName": "Notify.Events",
   "name": "homebridge-notifyevents",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "HomeBridge plugin to send message using Notify.Events service",
   "author": "Notify.Events",
   "keywords": [
@@ -37,6 +37,6 @@
     "eslint": "^8.7.0"
   },
   "dependencies": {
-    "@notify.events/nodejs": "^1.1.1"
+    "@notify.events/nodejs": "^1.2.0"
   }
 }
