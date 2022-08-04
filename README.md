@@ -80,7 +80,15 @@ In order for Notify.Events to interact with Homebridge, you need to enable actio
 | text      | yes      | Message text (allowed html-tags: `<b>`, `<i>`, `<a href="">`, `<br>`)      |
 | priority  |          | Message priority (`highest`, `high`, `normal`, `low`, `lowest`)            |
 | level     |          | Message level (`verbose`, `info`, `notice`, `warning`, `error`, `success`) |
+| images    |          | [Image list](#Image--File-configuration)                                   | 
+| files     |          | [File list](#Image--File-configuration)                                    | 
 | actions   |          | [Action list](#Action-(accessory)-configuration)                           |
+
+### Image / File configuration
+
+| Parameter  | Required | Description         |
+|------------|----------|---------------------|
+| filename   | yes      | Image/File filename |
 
 ### Action (accessory) configuration
 
@@ -114,6 +122,16 @@ In order for Notify.Events to interact with Homebridge, you need to enable actio
                             "text": "Hello <b>Dolly</b>",
                             "priority": "normal",
                             "level": "info",
+                            "images": [
+                                {
+                                    "filename": "/tmp/1.jpg"
+                                }
+                            ],
+                            "files": [
+                                {
+                                    "filename": "/tmp/1.txt"
+                                }
+                            ],
                             "actions": [
                                 {
                                     "name": "My Action",
